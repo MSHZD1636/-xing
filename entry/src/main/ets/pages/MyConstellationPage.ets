@@ -34,7 +34,9 @@ struct MyConstellationPage {
     await StorageUtils.put(StoreKey.MY_BIRTHDAY, DateUtils.formatDate(this.birthday));
     await StorageUtils.put(StoreKey.MY_NICKNAME, this.nickname.trim().length > 0 ? this.nickname.trim() : '星语用户');
     promptAction.showToast({ message: '已保存你的专属星座 ✨' });
-    setTimeout(() => router.back(), 600);
+    setTimeout(() => {
+      router.back();
+    }, 600);
   }
 
   @Builder

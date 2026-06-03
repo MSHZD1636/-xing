@@ -52,7 +52,9 @@ struct ChatPage {
   }
 
   private scrollToBottom(): void {
-    setTimeout(() => this.scroller.scrollEdge(Edge.Bottom), 60);
+    setTimeout(() => {
+      this.scroller.scrollEdge(Edge.Bottom);
+    }, 60);
   }
 
   private async persist(): Promise<void> {
