@@ -53,15 +53,22 @@ struct TarotDetailPage {
 
   @Builder
   bigCard() {
-    Column({ space: 12 }) {
-      Text(this.card.roman).fontSize(28).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
-      Text('🔮').fontSize(72)
-      Text(this.card.name).fontSize(FontSize.TITLE).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
-      Text(this.card.nameEn).fontSize(FontSize.BODY).fontColor(Colors.TEXT_SECONDARY)
+    Stack() {
+      if (this.card.image) {
+        Image(this.card.image!).width(200).height(320).objectFit(ImageFit.Cover).borderRadius(BorderRadius.CARD)
+      } else {
+        Column({ space: 12 }) {
+          Text(this.card.roman).fontSize(28).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
+          Text('🔮').fontSize(72)
+          Text(this.card.name).fontSize(FontSize.TITLE).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
+          Text(this.card.nameEn).fontSize(FontSize.BODY).fontColor(Colors.TEXT_SECONDARY)
+        }
+        .width(200).height(320).justifyContent(FlexAlign.Center)
+        .linearGradient({ angle: 160, colors: [[this.card.color, 0.0], ['#1C1033', 0.55], ['#0D0821', 1.0]] })
+      }
     }
-    .width(200).height(320).justifyContent(FlexAlign.Center)
+    .width(200).height(320).clip(true)
     .borderRadius(BorderRadius.CARD).border({ width: 2, color: this.card.color })
-    .linearGradient({ angle: 160, colors: [[this.card.color, 0.0], ['#1C1033', 0.55], ['#0D0821', 1.0]] })
   }
 
   @Builder

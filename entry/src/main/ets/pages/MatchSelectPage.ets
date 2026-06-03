@@ -77,10 +77,19 @@ struct MatchSelectPage {
         .fontSize(FontSize.SUBTITLE).fontWeight(FontWeight.Bold)
         .fontColor(Colors.BG_PRIMARY).backgroundColor(Colors.ACCENT_GOLD)
         .borderRadius(BorderRadius.BUTTON)
-        .margin({ bottom: 30 })
+        .margin({ bottom: 14 })
         .onClick(() => {
           router.pushUrl({ url: 'pages/MatchResultPage', params: { id1: this.myId, id2: this.taId } });
         })
+
+      // 用户间匹配入口
+      Button('💞 寻找星座之缘（用户匹配）')
+        .width('80%').height(50)
+        .fontSize(FontSize.BODY).fontWeight(FontWeight.Bold)
+        .fontColor(Colors.TEXT_PRIMARY).backgroundColor(Colors.ACCENT_PINK)
+        .borderRadius(BorderRadius.BUTTON)
+        .margin({ bottom: 30 })
+        .onClick(() => router.pushUrl({ url: 'pages/UserMatchPage' }))
 
       BottomTabBar({ currentIndex: 2 })
     }

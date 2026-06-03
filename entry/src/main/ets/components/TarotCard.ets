@@ -65,30 +65,45 @@ export struct TarotCard {
 
   @Builder
   frontFace() {
-    Column({ space: 12 }) {
-      Text(this.card.roman)
-        .fontSize(28)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(Colors.TEXT_PRIMARY)
-      Text('🔮')
-        .fontSize(60)
-      Text(this.card.name)
-        .fontSize(FontSize.SUBTITLE)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(Colors.TEXT_PRIMARY)
-      Text(this.card.nameEn)
-        .fontSize(FontSize.CAPTION)
-        .fontColor(Colors.TEXT_SECONDARY)
+    Stack() {
+      if (this.card.image) {
+        // 真实牌面图片
+        Image(this.card.image!)
+          .width(200)
+          .height(340)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(BorderRadius.CARD)
+      } else {
+        // 纯代码占位牌面
+        Column({ space: 12 }) {
+          Text(this.card.roman)
+            .fontSize(28)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(Colors.TEXT_PRIMARY)
+          Text('🔮')
+            .fontSize(60)
+          Text(this.card.name)
+            .fontSize(FontSize.SUBTITLE)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(Colors.TEXT_PRIMARY)
+          Text(this.card.nameEn)
+            .fontSize(FontSize.CAPTION)
+            .fontColor(Colors.TEXT_SECONDARY)
+        }
+        .width(200)
+        .height(340)
+        .justifyContent(FlexAlign.Center)
+        .linearGradient({
+          angle: 160,
+          colors: [[this.card.color, 0.0], ['#1C1033', 0.55], ['#0D0821', 1.0]]
+        })
+      }
     }
     .width(200)
     .height(340)
-    .justifyContent(FlexAlign.Center)
     .borderRadius(BorderRadius.CARD)
     .border({ width: 2, color: this.card.color })
-    .linearGradient({
-      angle: 160,
-      colors: [[this.card.color, 0.0], ['#1C1033', 0.55], ['#0D0821', 1.0]]
-    })
+    .clip(true)
     // 正面在翻转后需再翻 180° 以修正镜像
     .rotate({ x: 0, y: 1, z: 0, angle: 180, centerX: '50%', centerY: '50%' })
   }

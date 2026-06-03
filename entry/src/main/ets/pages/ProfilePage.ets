@@ -22,10 +22,17 @@ struct ProfilePage {
   private todayStr: string = DateUtils.formatDate(new Date());
   private menus: MenuItem[] = [
     { icon: '⭐', title: '我的收藏', url: 'pages/FavoritePage' },
+    { icon: '💞', title: '星友匹配 / 聊天', url: 'pages/UserMatchPage' },
     { icon: '🎂', title: '生日星座查询', url: 'pages/BirthdayQueryPage' },
     { icon: '🔔', title: '推送设置', url: 'pages/NotificationSettingPage' },
     { icon: '🌗', title: '星盘知识', url: 'pages/StarChartPage' }
   ];
+
+  private async logout(): Promise<void> {
+    await StorageUtils.logout();
+    promptAction.showToast({ message: '已退出登录' });
+    router.replaceUrl({ url: 'pages/LoginPage' });
+  }
 
   onPageShow(): void {
     StorageUtils.getNumber(StoreKey.MY_CONSTELLATION, 0).then((v: number) => this.myId = v);
@@ -107,6 +114,12 @@ struct ProfilePage {
           }
           .width('90%').borderRadius(BorderRadius.CARD).backgroundColor(Colors.BG_CARD)
           .divider({ strokeWidth: 1, color: Colors.DIVIDER, startMargin: 16, endMargin: 16 })
+
+          Button('退出登录')
+            .width('90%').height(46).margin({ top: 16 })
+            .fontColor(Colors.DANGER).backgroundColor(Colors.BG_CARD)
+            .border({ width: 1, color: Colors.DANGER }).borderRadius(BorderRadius.BUTTON)
+            .onClick(() => this.logout())
 
           Blank().height(20)
         }

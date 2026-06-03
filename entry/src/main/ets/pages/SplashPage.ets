@@ -2,7 +2,7 @@ import { router } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Colors, STARRY_COLORS, STARRY_ANGLE } from '../utils/Constants';
-import { StorageUtils } from '../utils/StorageUtils';
+import { StorageUtils, StoreKey } from '../utils/StorageUtils';
 
 interface Particle {
   x: number;
@@ -21,13 +21,15 @@ struct SplashPage {
   private timerId: number = -1;
   private jumpTimer: number = -1;
   private t: number = 0;
+  private initialized: Promise<void> = Promise.resolve();
   @State logoOpacity: number = 0;
   @State logoScale: number = 0.7;
 
   aboutToAppear(): void {
     // 初始化本地存储
     const ctx = getContext(this) as common.UIAbilityContext;
-    StorageUtils.init(ctx).catch((e: Error) => {
+    this.initialized = StorageUtils.init(ctx);
+    this.initialized.catch((e: Error) => {
       hilog.error(0x0001, 'Splash', 'storage init failed: %{public}s', e.message);
     });
 
@@ -48,9 +50,12 @@ struct SplashPage {
       this.logoScale = 1;
     });
 
-    // 2 秒后跳转首页
-    this.jumpTimer = setTimeout(() => {
-      router.replaceUrl({ url: 'pages/HomePage' }).catch((e: Error) => {
+    // 2 秒后根据登录态跳转：已登录→首页，未登录→登录页
+    this.jumpTimer = setTimeout(async () => {
+      await this.initialized;
+      const logged: boolean = await StorageUtils.getBool(StoreKey.LOGGED_IN, false);
+      const dest: string = logged ? 'pages/HomePage' : 'pages/LoginPage';
+      router.replaceUrl({ url: dest }).catch((e: Error) => {
         hilog.error(0x0001, 'Splash', 'jump failed: %{public}s', e.message);
       });
     }, 2200);

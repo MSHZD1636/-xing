@@ -68,12 +68,24 @@ struct CalendarPage {
     .alignItems(VerticalAlign.Center)
   }
 
+  private goHome(): void {
+    if (Number(router.getLength()) > 1) {
+      router.back();
+    } else {
+      router.replaceUrl({ url: 'pages/HomePage' });
+    }
+  }
+
   build() {
     Column() {
       Row() {
+        Text('‹').fontSize(34).fontColor(Colors.TEXT_PRIMARY)
+          .padding({ right: 12 }).onClick(() => this.goHome())
         Text('星座日历').fontSize(FontSize.TITLE).fontWeight(FontWeight.Bold)
-          .fontColor(Colors.TEXT_PRIMARY)
-      }.width('100%').padding({ left: 20, top: 16, bottom: 4 })
+          .fontColor(Colors.TEXT_PRIMARY).layoutWeight(1)
+        Text('返回首页').fontSize(FontSize.CAPTION).fontColor(Colors.ACCENT_GOLD)
+          .onClick(() => this.goHome())
+      }.width('100%').padding({ left: 16, right: 16, top: 16, bottom: 4 }).alignItems(VerticalAlign.Center)
 
       this.monthHeader()
 

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="340" viewBox="0 0 200 340">
+  <rect width="200" height="340" rx="12" fill="#F4ECD8"/>
+  <rect x="6" y="6" width="188" height="328" rx="8" fill="none" stroke="#C9B68A" stroke-width="2"/>
+  <text x="100" y="34" text-anchor="middle" font-family="serif" font-size="14" fill="#3A2E1A">QUEEN of WANDS</text>
+  <!-- backdrop -->
+  <rect x="14" y="44" width="172" height="210" fill="#EBD98F"/>
+  <!-- throne -->
+  <rect x="48" y="60" width="104" height="190" fill="#E0C158"/>
+  <circle cx="70" cy="78" r="8" fill="#C79A2E"/><circle cx="130" cy="78" r="8" fill="#C79A2E"/>
+  <!-- crown -->
+  <path d="M82 78 l6 -14 l12 8 l12 -8 l6 14 Z" fill="#F2D85C" stroke="#B8912E"/>
+  <!-- head -->
+  <circle cx="100" cy="98" r="14" fill="#EAC9A0"/>
+  <!-- robe -->
+  <path d="M74 112 q26 -16 52 0 l10 130 l-72 0 Z" fill="#F2C94C"/>
+  <path d="M88 116 l24 0 l6 126 l-36 0 Z" fill="#FFFFFF" opacity="0.5"/>
+  <!-- staff -->
+  <rect x="60" y="100" width="6" height="150" fill="#8A5A2B"/>
+  <circle cx="63" cy="98" r="6" fill="#4E8C46"/>
+  <!-- sunflower -->
+  <circle cx="138" cy="150" r="12" fill="#E8A21E"/>
+  <circle cx="138" cy="150" r="5" fill="#7A4A14"/>
+  <!-- black cat -->
+  <ellipse cx="100" cy="262" rx="16" ry="10" fill="#222"/>
+  <path d="M90 256 l-4 -8 l8 4 Z M110 256 l4 -8 l-8 4 Z" fill="#222"/>
+  <text x="100" y="312" text-anchor="middle" font-family="serif" font-size="15" fill="#2A2113">权杖王后</text>
+</svg>

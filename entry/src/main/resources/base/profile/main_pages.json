@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/SplashPage",
+    "pages/LoginPage",
     "pages/HomePage",
     "pages/FortuneDetailPage",
     "pages/AllFortuneListPage",
@@ -19,6 +20,8 @@
     "pages/MyConstellationPage",
     "pages/FavoritePage",
     "pages/BirthdayQueryPage",
-    "pages/StarChartPage"
+    "pages/StarChartPage",
+    "pages/UserMatchPage",
+    "pages/ChatPage"
   ]
 }

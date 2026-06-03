@@ -155,7 +155,8 @@ export const TAROT_CARDS: TarotCardInfo[] = [
     overall: '迷雾之中真假难辨，倾听直觉但别被恐惧蒙蔽。耐心穿过朦胧，黎明终会到来。',
     love: '感情中或有误会与不确定，多沟通、少猜疑，看清真心。',
     career: '信息可能不够明朗，谨慎判断，别被表象迷惑。',
-    luckyTip: '遇到模糊不清的事，先求证再下结论。'
+    luckyTip: '遇到模糊不清的事，先求证再下结论。',
+    image: $r('app.media.tarot_moon')
   },
   {
     id: 19, name: '太阳', nameEn: 'The Sun', roman: 'XIX', color: '#FFA63D',
@@ -180,15 +181,50 @@ export const TAROT_CARDS: TarotCardInfo[] = [
     love: '感情达到和谐圆满的状态，彼此成就，幸福水到渠成。',
     career: '目标达成、梦想成真，你的努力赢得了完整的回报。',
     luckyTip: '为自己的努力庆祝，并感恩一路同行的人。'
+  },
+  // ---------- 权杖牌组（小阿卡那 · 新增，含真实牌面图片） ----------
+  {
+    id: 22, name: '权杖三', nameEn: 'Three of Wands', roman: 'W·III', color: '#FF8A5C',
+    keywords: ['远见', '扩展', '机遇'],
+    overall: '你已迈出第一步，正眺望远方的可能。机会即将到来，保持开阔的视野，勇敢拓展你的版图。',
+    love: '感情进入新阶段，适合规划共同的未来，异地或远方的缘分值得期待。',
+    career: '事业有扩张之势，合作与拓展带来回报，把眼光放长远会更有收获。',
+    luckyTip: '今天试着把目标定得更远大一些。',
+    image: $r('app.media.tarot_wands03')
+  },
+  {
+    id: 23, name: '权杖王后', nameEn: 'Queen of Wands', roman: 'W·Q', color: '#FFC83D',
+    keywords: ['自信', '热情', '魅力'],
+    overall: '你散发着温暖而自信的光芒，像盛放的向日葵。做真实的自己，魅力会吸引一切美好靠近。',
+    love: '魅力值满分，主动而真诚地表达自己，会收获热烈的回应。',
+    career: '以热情与领导力感染他人，独立自主地推进，你能成为众人焦点。',
+    luckyTip: '今天大胆展现你的个性与才华。',
+    image: $r('app.media.tarot_wands_queen')
+  },
+  {
+    id: 24, name: '权杖国王', nameEn: 'King of Wands', roman: 'W·K', color: '#FF7A33',
+    keywords: ['领导', '远见', '魄力'],
+    overall: '你拥有掌控全局的魄力与远见。以坚定的信念带领方向，敢想敢做，成功会向你靠拢。',
+    love: '在关系中展现担当与决断，给对方稳稳的安全感。',
+    career: '是开创与领导的好时机，制定愿景并果断执行，他人会追随你的脚步。',
+    luckyTip: '相信自己的判断，做那个拍板的人。',
+    image: $r('app.media.tarot_wands_king')
   }
 ];
 
 /**
- * 根据日期计算当日塔罗牌 id（同一天结果固定）
+ * 根据日期计算当日塔罗牌 id（同一天结果固定，覆盖全部牌）
  */
 export function getDailyTarotId(date: Date): number {
   const sum: number = date.getFullYear() + (date.getMonth() + 1) + date.getDate();
-  return sum % 22;
+  return TAROT_CARDS[sum % TAROT_CARDS.length].id;
+}
+
+/**
+ * 随机抽取一张塔罗牌 id（用于「再抽一张」）
+ */
+export function getRandomTarotId(): number {
+  return TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)].id;
 }
 
 export function getTarotById(id: number): TarotCardInfo {

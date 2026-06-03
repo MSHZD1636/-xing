@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="340" viewBox="0 0 200 340">
+  <rect width="200" height="340" rx="12" fill="#F4ECD8"/>
+  <rect x="6" y="6" width="188" height="328" rx="8" fill="none" stroke="#C9B68A" stroke-width="2"/>
+  <text x="100" y="34" text-anchor="middle" font-family="serif" font-size="18" fill="#3A2E1A">XVIII</text>
+  <!-- sky -->
+  <rect x="14" y="44" width="172" height="210" fill="#BFD8E8"/>
+  <!-- moon with face -->
+  <circle cx="100" cy="105" r="34" fill="#F2D85C"/>
+  <path d="M100 71 a34 34 0 1 0 0 68 a26 26 0 1 1 0 -68 Z" fill="#E9C84A"/>
+  <circle cx="96" cy="100" r="3" fill="#7A6520"/>
+  <!-- moon rays -->
+  <g stroke="#E9C84A" stroke-width="3">
+    <line x1="100" y1="58" x2="100" y2="48"/><line x1="130" y1="70" x2="138" y2="63"/>
+    <line x1="70" y1="70" x2="62" y2="63"/><line x1="142" y1="105" x2="152" y2="105"/>
+    <line x1="58" y1="105" x2="48" y2="105"/>
+  </g>
+  <!-- towers -->
+  <rect x="40" y="120" width="20" height="70" fill="#D9CBA6" stroke="#B7A678"/>
+  <rect x="140" y="120" width="20" height="70" fill="#D9CBA6" stroke="#B7A678"/>
+  <!-- ground -->
+  <rect x="14" y="200" width="172" height="54" fill="#8FB36A"/>
+  <!-- path -->
+  <path d="M92 254 L98 200 L102 200 L108 254 Z" fill="#D9CBA6"/>
+  <!-- two wolves -->
+  <path d="M55 230 q8 -20 18 0 q-9 8 -18 0Z" fill="#7C8B57"/>
+  <path d="M145 230 q-8 -20 -18 0 q9 8 18 0Z" fill="#A9925E"/>
+  <!-- pool -->
+  <ellipse cx="100" cy="248" rx="22" ry="8" fill="#6FA8C8"/>
+  <text x="100" y="300" text-anchor="middle" font-family="serif" font-size="18" fill="#2A2113" letter-spacing="1">THE MOON</text>
+</svg>
