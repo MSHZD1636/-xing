@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "星语星座运势主模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "星语入口能力"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "星语"
+    }
+  ]
+}

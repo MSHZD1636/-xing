@@ -1,0 +1,22 @@
+# DevEco Studio / HarmonyOS build artifacts
+/node_modules
+**/node_modules
+/oh_modules
+**/oh_modules
+/.idea
+/build
+**/build
+/.hvigor
+**/.hvigor
+/.cxx
+**/.cxx
+/.clangd
+/.clang-format
+/.clang-tidy
+local.properties
+*.iml
+.DS_Store
+/.ohpm
+**/.ohpm
+/.preview
+**/.preview

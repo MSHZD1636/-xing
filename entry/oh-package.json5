@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "StarWhisper entry module",
+  "main": "",
+  "author": "StarWhisper Team",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

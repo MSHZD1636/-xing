@@ -1,0 +1,24 @@
+{
+  "src": [
+    "pages/SplashPage",
+    "pages/HomePage",
+    "pages/FortuneDetailPage",
+    "pages/AllFortuneListPage",
+    "pages/SearchPage",
+    "pages/NotificationSettingPage",
+    "pages/ConstellationListPage",
+    "pages/ConstellationDetailPage",
+    "pages/MatchSelectPage",
+    "pages/MatchResultPage",
+    "pages/ElementPage",
+    "pages/TarotPage",
+    "pages/TarotDetailPage",
+    "pages/CalendarPage",
+    "pages/CalendarDetailPage",
+    "pages/ProfilePage",
+    "pages/MyConstellationPage",
+    "pages/FavoritePage",
+    "pages/BirthdayQueryPage",
+    "pages/StarChartPage"
+  ]
+}
