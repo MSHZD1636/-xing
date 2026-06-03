@@ -1,10 +1,9 @@
-import { animator, AnimatorResult } from '@kit.ArkUI';
 import { TarotCardInfo } from '../model/TarotCard';
 import { Colors, BorderRadius, FontSize } from '../utils/Constants';
 
 /**
  * 塔罗牌翻转动画组件
- * 使用 @ohos.animator 控制 rotateY 0 → 180deg，配合 Stack 正反面切换。
+ * 使用 animateTo 控制 rotateY 0 → 180deg，配合 Stack 正反面切换。
  * locked = true 时直接展示正面（当日已抽取）。
  */
 @Component
@@ -14,7 +13,6 @@ export struct TarotCard {
   @State angle: number = 0;
   @State revealed: boolean = false;
   onRevealed?: () => void;
-  private anim: AnimatorResult | null = null;
 
   aboutToAppear(): void {
     if (this.locked) {
@@ -27,26 +25,18 @@ export struct TarotCard {
     if (this.revealed) {
       return;
     }
-    this.anim = animator.create({
+    animateTo({
       duration: 700,
-      easing: 'ease-in-out',
-      delay: 0,
-      fill: 'forwards',
-      direction: 'normal',
-      iterations: 1,
-      begin: 0,
-      end: 180
-    });
-    this.anim.onFrame = (value: number) => {
-      this.angle = value;
-    };
-    this.anim.onFinish = () => {
-      this.revealed = true;
-      if (this.onRevealed) {
-        this.onRevealed();
+      curve: Curve.EaseInOut,
+      onFinish: () => {
+        this.revealed = true;
+        if (this.onRevealed) {
+          this.onRevealed();
+        }
       }
-    };
-    this.anim.play();
+    }, () => {
+      this.angle = 180;
+    });
   }
 
   @Builder

@@ -5,14 +5,14 @@ import { StorageUtils, StoreKey } from '../utils/StorageUtils';
 @Entry
 @Component
 struct NotificationSettingPage {
-  @State enabled: boolean = true;
+  @State notifyOn: boolean = true;
   @State hour: number = 8;
   @State minute: number = 0;
   @State prefs: boolean[] = [true, true, false, false];
   private readonly prefLabels: string[] = ['每日运势', '幸运提示', '塔罗抽签提醒', '配对推荐'];
 
   aboutToAppear(): void {
-    StorageUtils.getBool(StoreKey.NOTIFY_ENABLED, true).then((v: boolean) => this.enabled = v);
+    StorageUtils.getBool(StoreKey.NOTIFY_ENABLED, true).then((v: boolean) => this.notifyOn = v);
     StorageUtils.getString(StoreKey.NOTIFY_TIME, '08:00').then((v: string) => {
       const parts: string[] = v.split(':');
       if (parts.length === 2) {
@@ -23,7 +23,7 @@ struct NotificationSettingPage {
   }
 
   private async save(): Promise<void> {
-    await StorageUtils.put(StoreKey.NOTIFY_ENABLED, this.enabled);
+    await StorageUtils.put(StoreKey.NOTIFY_ENABLED, this.notifyOn);
     const t: string = `${this.hour.toString().padStart(2, '0')}:${this.minute.toString().padStart(2, '0')}`;
     await StorageUtils.put(StoreKey.NOTIFY_TIME, t);
     promptAction.showToast({ message: '推送设置已保存' });
@@ -53,9 +53,9 @@ struct NotificationSettingPage {
               Text('接收每日推送').fontSize(FontSize.BODY).fontColor(Colors.TEXT_PRIMARY)
               Text('每天定时为你送上专属运势').fontSize(FontSize.CAPTION).fontColor(Colors.TEXT_SECONDARY)
             }.alignItems(HorizontalAlign.Start).layoutWeight(1)
-            Toggle({ type: ToggleType.Switch, isOn: this.enabled })
+            Toggle({ type: ToggleType.Switch, isOn: this.notifyOn })
               .selectedColor(Colors.ACCENT_GOLD)
-              .onChange((v: boolean) => this.enabled = v)
+              .onChange((v: boolean) => this.notifyOn = v)
           }
           .width('100%').padding(16).borderRadius(BorderRadius.CARD).backgroundColor(Colors.BG_CARD)
 
@@ -63,8 +63,8 @@ struct NotificationSettingPage {
           Column({ space: 10 }) {
             Text('推送时间').fontSize(FontSize.BODY).fontColor(Colors.TEXT_PRIMARY).width('100%')
             TimePicker({ selected: this.makeTime() })
-              .enabled(this.enabled)
-              .opacity(this.enabled ? 1 : 0.4)
+              .enabled(this.notifyOn)
+              .opacity(this.notifyOn ? 1 : 0.4)
               .onChange((v: TimePickerResult) => {
                 this.hour = v.hour;
                 this.minute = v.minute;
@@ -100,7 +100,7 @@ struct NotificationSettingPage {
     .width('100%').height('100%')
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
     .backgroundColor(Colors.BG_PRIMARY)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 
   private makeTime(): Date {

@@ -81,6 +81,6 @@ struct AllFortuneListPage {
     .width('100%').height('100%')
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
     .backgroundColor(Colors.BG_PRIMARY)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 }

@@ -1,4 +1,4 @@
-import { router, animator, AnimatorResult } from '@kit.ArkUI';
+import { router } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Colors, STARRY_COLORS, STARRY_ANGLE } from '../utils/Constants';
@@ -18,7 +18,9 @@ struct SplashPage {
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private ctx: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
   private particles: Particle[] = [];
-  private anim: AnimatorResult | null = null;
+  private timerId: number = -1;
+  private jumpTimer: number = -1;
+  private t: number = 0;
   @State logoOpacity: number = 0;
   @State logoScale: number = 0.7;
 
@@ -47,7 +49,7 @@ struct SplashPage {
     });
 
     // 2 秒后跳转首页
-    setTimeout(() => {
+    this.jumpTimer = setTimeout(() => {
       router.replaceUrl({ url: 'pages/HomePage' }).catch((e: Error) => {
         hilog.error(0x0001, 'Splash', 'jump failed: %{public}s', e.message);
       });
@@ -55,26 +57,26 @@ struct SplashPage {
   }
 
   aboutToDisappear(): void {
-    if (this.anim) {
-      this.anim.cancel();
+    if (this.timerId >= 0) {
+      clearInterval(this.timerId);
+      this.timerId = -1;
+    }
+    if (this.jumpTimer >= 0) {
+      clearTimeout(this.jumpTimer);
+      this.jumpTimer = -1;
     }
   }
 
   private startParticles(): void {
-    this.anim = animator.create({
-      duration: 3000,
-      easing: 'linear',
-      delay: 0,
-      fill: 'forwards',
-      direction: 'normal',
-      iterations: -1,
-      begin: 0,
-      end: 1
-    });
-    this.anim.onFrame = (value: number) => {
-      this.drawParticles(value);
-    };
-    this.anim.play();
+    this.drawParticles(0);
+    // 定时重绘实现星点闪烁（粒子动画）
+    this.timerId = setInterval(() => {
+      this.t += 0.03;
+      if (this.t > 1) {
+        this.t -= 1;
+      }
+      this.drawParticles(this.t);
+    }, 50);
   }
 
   private drawParticles(t: number): void {

@@ -16,7 +16,7 @@ interface IdParam {
 @Entry
 @Component
 struct FortuneDetailPage {
-  @State id: number = 1;
+  @State cstId: number = 1;
   @State info: ConstellationInfo = getConstellationById(1);
   @State fortune: DailyFortune = getFortune(1, DateUtils.formatDate(new Date()));
   @State isFav: boolean = false;
@@ -25,17 +25,17 @@ struct FortuneDetailPage {
   aboutToAppear(): void {
     const p = router.getParams() as IdParam;
     if (p && p.id) {
-      this.id = p.id;
+      this.cstId = p.id;
     }
-    this.info = getConstellationById(this.id);
-    this.fortune = getFortune(this.id, this.todayStr);
-    StorageUtils.isFavorite(this.id).then((v: boolean) => {
+    this.info = getConstellationById(this.cstId);
+    this.fortune = getFortune(this.cstId, this.todayStr);
+    StorageUtils.isFavorite(this.cstId).then((v: boolean) => {
       this.isFav = v;
     });
   }
 
   private async toggleFav(): Promise<void> {
-    const added: boolean = await StorageUtils.toggleFavorite(this.id);
+    const added: boolean = await StorageUtils.toggleFavorite(this.cstId);
     this.isFav = added;
     promptAction.showToast({ message: added ? '已收藏 ⭐' : '已取消收藏' });
   }
@@ -159,7 +159,7 @@ struct FortuneDetailPage {
             .fontColor(Colors.BG_PRIMARY)
             .backgroundColor(Colors.ACCENT_GOLD)
             .borderRadius(BorderRadius.BUTTON)
-            .onClick(() => router.pushUrl({ url: 'pages/ConstellationDetailPage', params: { id: this.id } }))
+            .onClick(() => router.pushUrl({ url: 'pages/ConstellationDetailPage', params: { id: this.cstId } }))
 
           Blank().height(24)
         }
@@ -172,6 +172,6 @@ struct FortuneDetailPage {
     .height('100%')
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
     .backgroundColor(Colors.BG_PRIMARY)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 }

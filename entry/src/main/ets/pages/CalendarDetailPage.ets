@@ -17,20 +17,20 @@ interface CalParam {
 @Component
 struct CalendarDetailPage {
   @State dateStr: string = DateUtils.formatDate(new Date());
-  @State id: number = 1;
+  @State cstId: number = 1;
   @State fortune: DailyFortune = getFortune(1, DateUtils.formatDate(new Date()));
 
   aboutToAppear(): void {
     const p = router.getParams() as CalParam;
     if (p && p.date) {
       this.dateStr = p.date;
-      this.id = p.id;
+      this.cstId = p.id;
     }
     this.reload();
   }
 
   private reload(): void {
-    this.fortune = getFortune(this.id, this.dateStr);
+    this.fortune = getFortune(this.cstId, this.dateStr);
   }
 
   private shiftDay(delta: number): void {
@@ -63,7 +63,7 @@ struct CalendarDetailPage {
               .onClick(() => this.shiftDay(-1))
             Column({ space: 4 }) {
               Text(this.dateStr).fontSize(FontSize.SUBTITLE).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
-              Text(`${getConstellationById(this.id).symbol} ${getConstellationById(this.id).name}`)
+              Text(`${getConstellationById(this.cstId).symbol} ${getConstellationById(this.cstId).name}`)
                 .fontSize(FontSize.CAPTION).fontColor(Colors.TEXT_SECONDARY)
             }.layoutWeight(1)
             Text('后一天 ›').fontSize(FontSize.BODY).fontColor(Colors.ACCENT_GOLD)
@@ -105,6 +105,6 @@ struct CalendarDetailPage {
     .width('100%').height('100%')
     .backgroundColor(Colors.BG_PRIMARY)
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 }

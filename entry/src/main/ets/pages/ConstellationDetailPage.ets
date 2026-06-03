@@ -11,15 +11,15 @@ interface IdParam {
 @Entry
 @Component
 struct ConstellationDetailPage {
-  @State id: number = 1;
+  @State cstId: number = 1;
   @State info: ConstellationInfo = getConstellationById(1);
 
   aboutToAppear(): void {
     const p = router.getParams() as IdParam;
     if (p && p.id) {
-      this.id = p.id;
+      this.cstId = p.id;
     }
-    this.info = getConstellationById(this.id);
+    this.info = getConstellationById(this.cstId);
   }
 
   @Builder
@@ -124,7 +124,7 @@ struct ConstellationDetailPage {
     .width('100%').height('100%')
     .backgroundColor(Colors.BG_PRIMARY)
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 
   @Builder

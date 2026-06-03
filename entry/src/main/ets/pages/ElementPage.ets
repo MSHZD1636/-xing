@@ -72,6 +72,6 @@ struct ElementPage {
     .width('100%').height('100%')
     .backgroundColor(Colors.BG_PRIMARY)
     .linearGradient({ angle: STARRY_ANGLE, colors: STARRY_COLORS })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.Top])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 }
