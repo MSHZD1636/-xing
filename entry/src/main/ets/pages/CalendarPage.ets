@@ -51,6 +51,14 @@ struct CalendarPage {
   }
 
   @Builder
+  legendDot(color: string, label: string) {
+    Row({ space: 4 }) {
+      Row().width(8).height(8).borderRadius(4).backgroundColor(color)
+      Text(label).fontSize(10).fontColor(Colors.TEXT_SECONDARY)
+    }
+  }
+
+  @Builder
   monthHeader() {
     Row() {
       Text('‹ 上月').fontSize(FontSize.BODY).fontColor(Colors.ACCENT_GOLD)
@@ -58,7 +66,7 @@ struct CalendarPage {
       Column({ space: 2 }) {
         Text(`${this.year} 年 ${this.month} 月`).fontSize(FontSize.SUBTITLE)
           .fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
-        Text(`${getConstellationById(this.myId).symbol} ${getConstellationById(this.myId).name}运势`)
+        Text(`${getConstellationById(this.myId).symbol} ${getConstellationById(this.myId).name} · 每日运势总览`)
           .fontSize(FontSize.CAPTION).fontColor(Colors.TEXT_SECONDARY)
       }.layoutWeight(1)
       Text('下月 ›').fontSize(FontSize.BODY).fontColor(Colors.ACCENT_GOLD)
@@ -88,6 +96,16 @@ struct CalendarPage {
       }.width('100%').padding({ left: 16, right: 16, top: 16, bottom: 4 }).alignItems(VerticalAlign.Center)
 
       this.monthHeader()
+
+      // 运势图例
+      Row({ space: 16 }) {
+        this.legendDot(Colors.ACCENT_GOLD, '极佳')
+        this.legendDot(Colors.SUCCESS, '不错')
+        this.legendDot(Colors.ACCENT_TEAL, '一般')
+        this.legendDot(Colors.WARNING, '偏低')
+        this.legendDot(Colors.DANGER, '较差')
+      }
+      .width('100%').justifyContent(FlexAlign.Center).padding({ bottom: 10 })
 
       // 星期标题
       Row() {
