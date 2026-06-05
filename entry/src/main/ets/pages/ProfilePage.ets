@@ -1,4 +1,5 @@
 import { router, promptAction } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Colors, FontSize, BorderRadius, STARRY_COLORS, STARRY_ANGLE } from '../utils/Constants';
 import { getConstellationById } from '../mock/ConstellationData';
 import { getFortune } from '../mock/FortuneData';
@@ -22,16 +23,36 @@ struct ProfilePage {
   private todayStr: string = DateUtils.formatDate(new Date());
   private menus: MenuItem[] = [
     { icon: '⭐', title: '我的收藏', url: 'pages/FavoritePage' },
-    { icon: '💞', title: '星友匹配 / 聊天', url: 'pages/UserMatchPage' },
     { icon: '🎂', title: '生日星座查询', url: 'pages/BirthdayQueryPage' },
     { icon: '🔔', title: '推送设置', url: 'pages/NotificationSettingPage' },
     { icon: '🌗', title: '星盘知识', url: 'pages/StarChartPage' }
   ];
 
-  private async logout(): Promise<void> {
-    await StorageUtils.logout();
-    promptAction.showToast({ message: '已退出登录' });
-    router.replaceUrl({ url: 'pages/LoginPage' });
+  private logout(): void {
+    AlertDialog.show({
+      title: '退出登录',
+      message: '确定要退出当前账号吗？',
+      primaryButton: {
+        value: '退出',
+        fontColor: Colors.DANGER,
+        action: () => {
+          // 清除登录态（即使写入失败也照常跳转，保证退出可用）
+          StorageUtils.logout().catch((e: Error) => {
+            hilog.error(0x0002, 'Profile', 'clear login flag failed: %{public}s', e.message);
+          });
+          promptAction.showToast({ message: '已退出登录' });
+          // 清空页面栈后跳转登录页，确保彻底退出
+          router.clear();
+          router.replaceUrl({ url: 'pages/LoginPage' }).catch((e: Error) => {
+            hilog.error(0x0002, 'Profile', 'logout jump failed: %{public}s', e.message);
+          });
+        }
+      },
+      secondaryButton: {
+        value: '取消',
+        action: () => {}
+      }
+    });
   }
 
   onPageShow(): void {

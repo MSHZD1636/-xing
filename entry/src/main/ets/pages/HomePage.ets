@@ -115,6 +115,43 @@ struct HomePage {
   }
 
   @Builder
+  matchEntry() {
+    Row({ space: 14 }) {
+      Stack() {
+        Circle().width(48).height(48).fill(Colors.ACCENT_PINK).opacity(0.28)
+        Text('💞').fontSize(24)
+      }
+      Column({ space: 4 }) {
+        Text('星友匹配 / 聊天')
+          .fontSize(FontSize.BODY)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(Colors.TEXT_PRIMARY)
+        Text('找到与你星座契合的 TA，开启缘分对话')
+          .fontSize(FontSize.CAPTION)
+          .fontColor(Colors.TEXT_SECONDARY)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      Text('去匹配 ›')
+        .fontSize(FontSize.CAPTION)
+        .fontColor(Colors.BG_PRIMARY)
+        .backgroundColor(Colors.ACCENT_PINK)
+        .borderRadius(BorderRadius.TAG)
+        .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+    }
+    .width('100%')
+    .padding(16)
+    .margin({ left: 16, right: 16, top: 14 })
+    .borderRadius(BorderRadius.CARD)
+    .linearGradient({ angle: 135, colors: [['#3A1A3A', 0.0], ['#1C1033', 1.0]] })
+    .border({ width: 1, color: Colors.ACCENT_PINK })
+    .onClick(() => router.pushUrl({ url: 'pages/UserMatchPage' }))
+  }
+
+  @Builder
   fortuneGrid() {
     Column() {
       Row() {
@@ -168,6 +205,7 @@ struct HomePage {
       Scroll() {
         Column() {
           this.luckyBanner()
+          this.matchEntry()
           this.fortuneGrid()
           Blank().height(20)
         }
