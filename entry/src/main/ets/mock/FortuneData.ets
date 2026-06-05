@@ -46,12 +46,27 @@ function scoreFrom(seed: number, salt: number): number {
   return ((seed * (salt + 3)) % 5) + 1;
 }
 
+/**
+ * 综合运势评分：分布到 2~5 星，避免大量集中在 3 星，使各星座呈现多样性。
+ * 用与单项评分不同的取模方式打散，得到约 2:3:4:5 = 1:2:2:1 的比例。
+ */
+function overallScore(seed: number): number {
+  const v: number = Math.floor(seed / 7) % 6;
+  if (v <= 0) {
+    return 2;
+  } else if (v <= 2) {
+    return 3;
+  } else if (v <= 4) {
+    return 4;
+  } else {
+    return 5;
+  }
+}
+
 export function getFortune(constellationId: number, dateStr: string): DailyFortune {
   const seed: number = hashSeed(constellationId, dateStr);
   const info: ConstellationInfo = getConstellationById(constellationId);
-  const overall: number = Math.min(5, Math.max(2, Math.round(
-    (scoreFrom(seed, 1) + scoreFrom(seed, 2) + scoreFrom(seed, 3)) / 3
-  )));
+  const overall: number = overallScore(seed);
   return {
     constellationId: constellationId,
     date: dateStr,

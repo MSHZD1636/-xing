@@ -5,70 +5,73 @@ import { StorageUtils, StoreKey } from '../utils/StorageUtils';
 @Entry
 @Component
 struct LoginPage {
-  @State phone: string = '';
-  @State code: string = '';
-  @State sentCode: string = '';
-  @State countdown: number = 0;
-  private timerId: number = -1;
+  @State isRegister: boolean = false;     // false=登录, true=注册
+  @State username: string = '';
+  @State password: string = '';
+  @State confirm: string = '';
 
-  aboutToDisappear(): void {
-    if (this.timerId >= 0) {
-      clearInterval(this.timerId);
-    }
+  aboutToAppear(): void {
+    // 确保默认账号存在（msh / 12345678）
+    StorageUtils.ensureDefaultAccount();
   }
 
-  private isPhoneValid(): boolean {
-    return /^1\d{10}$/.test(this.phone);
-  }
-
-  private sendCode(): void {
-    if (!this.isPhoneValid()) {
-      promptAction.showToast({ message: '请输入正确的 11 位手机号' });
-      return;
-    }
-    if (this.countdown > 0) {
-      return;
-    }
-    // 模拟下发验证码
-    this.sentCode = (Math.floor(Math.random() * 9000) + 1000).toString();
-    promptAction.showToast({ message: `验证码已发送：${this.sentCode}（演示）`, duration: 3000 });
-    this.countdown = 60;
-    this.timerId = setInterval(() => {
-      this.countdown -= 1;
-      if (this.countdown <= 0 && this.timerId >= 0) {
-        clearInterval(this.timerId);
-        this.timerId = -1;
-      }
-    }, 1000);
+  private switchMode(toRegister: boolean): void {
+    this.isRegister = toRegister;
+    this.password = '';
+    this.confirm = '';
   }
 
   private async doLogin(): Promise<void> {
-    if (!this.isPhoneValid()) {
-      promptAction.showToast({ message: '请输入正确的手机号' });
+    const u: string = this.username.trim();
+    if (u.length === 0 || this.password.length === 0) {
+      promptAction.showToast({ message: '请输入账号和密码' });
       return;
     }
-    if (this.sentCode.length === 0) {
-      promptAction.showToast({ message: '请先获取验证码' });
+    const ok: boolean = await StorageUtils.validateAccount(u, this.password);
+    if (!ok) {
+      promptAction.showToast({ message: '账号或密码不正确' });
       return;
     }
-    if (this.code !== this.sentCode) {
-      promptAction.showToast({ message: '验证码不正确' });
+    await this.finishLogin(u);
+  }
+
+  private async doRegister(): Promise<void> {
+    const u: string = this.username.trim();
+    if (u.length < 2) {
+      promptAction.showToast({ message: '账号至少 2 个字符' });
       return;
     }
+    if (this.password.length < 6) {
+      promptAction.showToast({ message: '密码至少 6 位' });
+      return;
+    }
+    if (this.password !== this.confirm) {
+      promptAction.showToast({ message: '两次输入的密码不一致' });
+      return;
+    }
+    const created: boolean = await StorageUtils.registerAccount(u, this.password);
+    if (!created) {
+      promptAction.showToast({ message: '该账号已存在，请直接登录' });
+      return;
+    }
+    promptAction.showToast({ message: '注册成功，已自动登录 ✨' });
+    await this.finishLogin(u);
+  }
+
+  private async finishLogin(username: string): Promise<void> {
     await StorageUtils.put(StoreKey.LOGGED_IN, true);
-    await StorageUtils.put(StoreKey.PHONE, this.phone);
-    // 若尚未设置昵称，用手机号尾号生成默认昵称
+    await StorageUtils.put(StoreKey.USERNAME, username);
+    // 若尚未设置昵称，用账号名作为默认昵称
     const nick: string = await StorageUtils.getString(StoreKey.MY_NICKNAME, '');
     if (nick.length === 0) {
-      await StorageUtils.put(StoreKey.MY_NICKNAME, '星友' + this.phone.slice(-4));
+      await StorageUtils.put(StoreKey.MY_NICKNAME, username);
     }
-    promptAction.showToast({ message: '登录成功，欢迎来到星语 ✨' });
     router.replaceUrl({ url: 'pages/HomePage' });
   }
 
   private async guestLogin(): Promise<void> {
     await StorageUtils.put(StoreKey.LOGGED_IN, true);
-    await StorageUtils.put(StoreKey.PHONE, '');
+    await StorageUtils.put(StoreKey.USERNAME, '游客');
     router.replaceUrl({ url: 'pages/HomePage' });
   }
 
@@ -78,59 +81,76 @@ struct LoginPage {
       Column({ space: 10 }) {
         Text('✦').fontSize(60).fontColor(Colors.ACCENT_GOLD)
         Text('星语').fontSize(34).fontWeight(FontWeight.Bold).fontColor(Colors.TEXT_PRIMARY)
-        Text('手机号登录，开启你的星辰之旅').fontSize(FontSize.CAPTION).fontColor(Colors.TEXT_SECONDARY)
+        Text(this.isRegister ? '创建账号，开启你的星辰之旅' : '账号登录，遇见每日星语')
+          .fontSize(FontSize.CAPTION).fontColor(Colors.TEXT_SECONDARY)
       }
-      .width('100%').padding({ top: 80, bottom: 40 })
+      .width('100%').padding({ top: 70, bottom: 24 })
 
-      // 手机号
-      Row() {
-        Text('+86').fontSize(FontSize.BODY).fontColor(Colors.TEXT_SECONDARY).margin({ right: 10 })
-        TextInput({ placeholder: '请输入手机号', text: this.phone })
-          .type(InputType.PhoneNumber)
-          .placeholderColor(Colors.TEXT_HINT)
-          .fontColor(Colors.TEXT_PRIMARY)
-          .backgroundColor(Color.Transparent)
-          .maxLength(11)
-          .layoutWeight(1)
-          .onChange((v: string) => this.phone = v)
+      // 切换 登录 / 注册
+      Row({ space: 0 }) {
+        Text('登录')
+          .fontSize(FontSize.SUBTITLE)
+          .fontWeight(this.isRegister ? FontWeight.Normal : FontWeight.Bold)
+          .fontColor(this.isRegister ? Colors.TEXT_HINT : Colors.ACCENT_GOLD)
+          .padding({ left: 18, right: 18, top: 8, bottom: 8 })
+          .onClick(() => this.switchMode(false))
+        Text('|').fontSize(FontSize.SUBTITLE).fontColor(Colors.DIVIDER)
+        Text('注册')
+          .fontSize(FontSize.SUBTITLE)
+          .fontWeight(this.isRegister ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(this.isRegister ? Colors.ACCENT_GOLD : Colors.TEXT_HINT)
+          .padding({ left: 18, right: 18, top: 8, bottom: 8 })
+          .onClick(() => this.switchMode(true))
       }
-      .width('86%').height(52).padding({ left: 16, right: 16 })
-      .borderRadius(BorderRadius.BUTTON).backgroundColor(Colors.BG_CARD)
-      .alignItems(VerticalAlign.Center)
+      .margin({ bottom: 8 })
 
-      // 验证码
-      Row({ space: 10 }) {
-        TextInput({ placeholder: '请输入验证码', text: this.code })
-          .type(InputType.Number)
-          .placeholderColor(Colors.TEXT_HINT)
-          .fontColor(Colors.TEXT_PRIMARY)
-          .backgroundColor(Colors.BG_CARD)
-          .borderRadius(BorderRadius.BUTTON)
-          .maxLength(4)
-          .layoutWeight(1)
-          .onChange((v: string) => this.code = v)
-        Button(this.countdown > 0 ? `${this.countdown}s` : '获取验证码')
-          .width(120).height(48)
-          .fontSize(FontSize.BODY)
-          .fontColor(this.countdown > 0 ? Colors.TEXT_HINT : Colors.BG_PRIMARY)
-          .backgroundColor(this.countdown > 0 ? Colors.BG_CARD2 : Colors.ACCENT_GOLD)
-          .borderRadius(BorderRadius.BUTTON)
-          .enabled(this.countdown === 0)
-          .onClick(() => this.sendCode())
+      // 账号
+      TextInput({ placeholder: '请输入账号', text: this.username })
+        .type(InputType.Normal)
+        .placeholderColor(Colors.TEXT_HINT).fontColor(Colors.TEXT_PRIMARY)
+        .backgroundColor(Colors.BG_CARD).borderRadius(BorderRadius.BUTTON)
+        .maxLength(20).width('86%').height(52).margin({ top: 14 })
+        .onChange((v: string) => this.username = v)
+      // 密码
+      TextInput({ placeholder: '请输入密码', text: this.password })
+        .type(InputType.Password)
+        .placeholderColor(Colors.TEXT_HINT).fontColor(Colors.TEXT_PRIMARY)
+        .backgroundColor(Colors.BG_CARD).borderRadius(BorderRadius.BUTTON)
+        .maxLength(20).width('86%').height(52).margin({ top: 14 })
+        .onChange((v: string) => this.password = v)
+      // 确认密码（仅注册）
+      if (this.isRegister) {
+        TextInput({ placeholder: '请再次输入密码', text: this.confirm })
+          .type(InputType.Password)
+          .placeholderColor(Colors.TEXT_HINT).fontColor(Colors.TEXT_PRIMARY)
+          .backgroundColor(Colors.BG_CARD).borderRadius(BorderRadius.BUTTON)
+          .maxLength(20).width('86%').height(52).margin({ top: 14 })
+          .onChange((v: string) => this.confirm = v)
       }
-      .width('86%').margin({ top: 16 })
 
-      Button('登 录')
+      Button(this.isRegister ? '注 册 并 登 录' : '登 录')
         .width('86%').height(52).margin({ top: 30 })
         .fontSize(FontSize.SUBTITLE).fontWeight(FontWeight.Bold)
         .fontColor(Colors.BG_PRIMARY).backgroundColor(Colors.ACCENT_GOLD)
         .borderRadius(BorderRadius.BUTTON)
-        .onClick(() => this.doLogin())
+        .onClick(() => {
+          if (this.isRegister) {
+            this.doRegister();
+          } else {
+            this.doLogin();
+          }
+        })
 
       Text('游客登录')
         .fontSize(FontSize.BODY).fontColor(Colors.TEXT_SECONDARY)
-        .margin({ top: 20 })
+        .margin({ top: 18 })
         .onClick(() => this.guestLogin())
+
+      // 默认账号提示
+      if (!this.isRegister) {
+        Text('演示账号：msh　密码：12345678')
+          .fontSize(FontSize.CAPTION).fontColor(Colors.ACCENT_PURPLE).margin({ top: 16 })
+      }
 
       Blank()
 

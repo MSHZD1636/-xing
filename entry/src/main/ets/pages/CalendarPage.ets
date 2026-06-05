@@ -130,7 +130,13 @@ struct CalendarPage {
               .borderRadius(BorderRadius.TAG)
               .backgroundColor(cell.isToday ? Colors.ACCENT_GOLD :
                 (this.selected && this.selected.day === cell.day ? Colors.BG_CARD2 : Color.Transparent))
-              .onClick(() => this.selected = cell)
+              .onClick(() => {
+                this.selected = cell;
+                router.pushUrl({
+                  url: 'pages/CalendarDetailPage',
+                  params: { date: cell.dateStr, id: this.myId }
+                });
+              })
             }
           }
         }, (cell: CalendarCell, index: number) => `${index}`)

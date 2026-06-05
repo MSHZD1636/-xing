@@ -19,9 +19,17 @@ export class StoreKey {
   static readonly NOTIFY_ENABLED: string = 'notify_enabled';
   static readonly NOTIFY_TIME: string = 'notify_time';
   static readonly LOGGED_IN: string = 'logged_in';            // 是否已登录
-  static readonly PHONE: string = 'login_phone';              // 登录手机号
+  static readonly PHONE: string = 'login_phone';              // 登录手机号（保留兼容）
+  static readonly USERNAME: string = 'login_username';        // 当前登录账号
+  static readonly ACCOUNTS: string = 'accounts_json';         // 已注册账号列表
   static readonly MATCHED_USERS: string = 'matched_user_ids'; // 已匹配用户 id 列表
   static readonly CHAT_PREFIX: string = 'chat_with_';         // 聊天记录前缀 + userId
+}
+
+// 账号记录
+export interface AccountRec {
+  u: string;  // 用户名
+  p: string;  // 密码
 }
 
 export class StorageUtils {
@@ -136,7 +144,43 @@ export class StorageUtils {
     await StorageUtils.put(StoreKey.CHAT_PREFIX + userId, json);
   }
 
-  // ---------- 登录状态封装 ----------
+  // ---------- 账号 / 登录封装 ----------
+  /** 读取已注册账号列表 */
+  static async getAccounts(): Promise<AccountRec[]> {
+    const raw: string = await StorageUtils.getString(StoreKey.ACCOUNTS, '[]');
+    try {
+      return JSON.parse(raw) as AccountRec[];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /** 确保默认账号存在：msh / 12345678 */
+  static async ensureDefaultAccount(): Promise<void> {
+    const list: AccountRec[] = await StorageUtils.getAccounts();
+    if (!list.some((a: AccountRec) => a.u === 'msh')) {
+      list.push({ u: 'msh', p: '12345678' });
+      await StorageUtils.put(StoreKey.ACCOUNTS, JSON.stringify(list));
+    }
+  }
+
+  /** 注册新账号，用户名已存在返回 false */
+  static async registerAccount(u: string, p: string): Promise<boolean> {
+    const list: AccountRec[] = await StorageUtils.getAccounts();
+    if (list.some((a: AccountRec) => a.u === u)) {
+      return false;
+    }
+    list.push({ u: u, p: p });
+    await StorageUtils.put(StoreKey.ACCOUNTS, JSON.stringify(list));
+    return true;
+  }
+
+  /** 校验账号密码 */
+  static async validateAccount(u: string, p: string): Promise<boolean> {
+    const list: AccountRec[] = await StorageUtils.getAccounts();
+    return list.some((a: AccountRec) => a.u === u && a.p === p);
+  }
+
   static async logout(): Promise<void> {
     await StorageUtils.put(StoreKey.LOGGED_IN, false);
   }

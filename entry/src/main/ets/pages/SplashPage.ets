@@ -28,7 +28,7 @@ struct SplashPage {
   aboutToAppear(): void {
     // 初始化本地存储
     const ctx = getContext(this) as common.UIAbilityContext;
-    this.initialized = StorageUtils.init(ctx);
+    this.initialized = StorageUtils.init(ctx).then(() => StorageUtils.ensureDefaultAccount());
     this.initialized.catch((e: Error) => {
       hilog.error(0x0001, 'Splash', 'storage init failed: %{public}s', e.message);
     });
