@@ -1,5 +1,5 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { window, display } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
@@ -38,20 +38,11 @@ export default class EntryAbility extends UIAbility {
     });
 
     // 多模态入口：手表直接进入精简版日历运势页，手机走完整启动流程
-    // 双重判断：1) deviceType（不同版本手表可能为 'wearable' 或 'watch'）
-    //          2) 屏幕物理像素较小（兜底，防止 deviceType 返回意外值）
+    // 仅依据 deviceType 判断（手机为 'phone'，手表不同系统版本为 'wearable' 或 'watch'）
     const dt: string = deviceInfo.deviceType;
-    let smallScreen: boolean = false;
-    try {
-      const disp = display.getDefaultDisplaySync();
-      smallScreen = Math.min(disp.width, disp.height) <= 600;
-    } catch (e) {
-      hilog.warn(DOMAIN, TAG, 'getDefaultDisplaySync failed');
-    }
-    const isWearable: boolean = dt === 'wearable' || dt === 'watch' || smallScreen;
+    const isWearable: boolean = dt === 'wearable' || dt === 'watch';
     const entryPage: string = isWearable ? 'pages/WatchCalendarPage' : 'pages/SplashPage';
-    hilog.info(DOMAIN, TAG, 'deviceType=%{public}s, small=%{public}s, entryPage=%{public}s',
-      dt, smallScreen ? 'Y' : 'N', entryPage);
+    hilog.info(DOMAIN, TAG, 'deviceType=%{public}s, entryPage=%{public}s', dt, entryPage);
 
     windowStage.loadContent(entryPage, (err) => {
       if (err.code) {

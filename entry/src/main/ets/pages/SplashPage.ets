@@ -1,4 +1,4 @@
-import { router, display } from '@kit.ArkUI';
+import { router } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -53,14 +53,7 @@ struct SplashPage {
 
     // 兜底：若该页在手表上被加载，直接进入手表日历运势页
     const dt: string = deviceInfo.deviceType;
-    let smallScreen: boolean = false;
-    try {
-      const disp = display.getDefaultDisplaySync();
-      smallScreen = Math.min(disp.width, disp.height) <= 600;
-    } catch (e) {
-      hilog.warn(0x0001, 'Splash', 'getDefaultDisplaySync failed');
-    }
-    const isWearable: boolean = dt === 'wearable' || dt === 'watch' || smallScreen;
+    const isWearable: boolean = dt === 'wearable' || dt === 'watch';
 
     // 2 秒后跳转：手表→日历运势页；手机已登录→首页，未登录→登录页
     this.jumpTimer = setTimeout(async () => {
