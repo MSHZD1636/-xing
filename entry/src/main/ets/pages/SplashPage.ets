@@ -23,6 +23,8 @@ struct SplashPage {
   private jumpTimer: number = -1;
   private t: number = 0;
   private initialized: Promise<void> = Promise.resolve();
+  private routed: boolean = false;
+  private rootWidth: number = 0;
   @State logoOpacity: number = 0;
   @State logoScale: number = 0.7;
 
@@ -51,14 +53,14 @@ struct SplashPage {
       this.logoScale = 1;
     });
 
-    // 兜底：若该页在手表上被加载，直接进入手表日历运势页
-    const dt: string = deviceInfo.deviceType;
-    const isWearable: boolean = dt === 'wearable' || dt === 'watch';
-
-    // 2 秒后跳转：手表→日历运势页；手机已登录→首页，未登录→登录页
+    // 2 秒后跳转（手机流程）。若期间 onAreaChange 判定为手表，则改走手表页。
     this.jumpTimer = setTimeout(async () => {
       await this.initialized;
-      if (isWearable) {
+      if (this.routed) {
+        return;
+      }
+      this.routed = true;
+      if (this.isWatchByWidth()) {
         router.replaceUrl({ url: 'pages/WatchCalendarPage' }).catch((e: Error) => {
           hilog.error(0x0001, 'Splash', 'watch jump failed: %{public}s', e.message);
         });
@@ -70,6 +72,33 @@ struct SplashPage {
         hilog.error(0x0001, 'Splash', 'jump failed: %{public}s', e.message);
       });
     }, 2200);
+  }
+
+  /** deviceType 在部分手表模拟器上为空，故以实际渲染宽度判断：手表圆屏约 233vp */
+  private isWatchByWidth(): boolean {
+    const dt: string = deviceInfo.deviceType;
+    if (dt === 'wearable' || dt === 'watch') {
+      return true;
+    }
+    return this.rootWidth > 0 && this.rootWidth <= 300;
+  }
+
+  /** 测得宽度后若判定为手表，立即跳转，避免停留在启动页 */
+  private onMeasured(width: number): void {
+    this.rootWidth = width;
+    if (this.routed || width <= 0 || width > 300) {
+      return;
+    }
+    this.routed = true;
+    if (this.jumpTimer >= 0) {
+      clearTimeout(this.jumpTimer);
+      this.jumpTimer = -1;
+    }
+    this.initialized.then(() => {
+      router.replaceUrl({ url: 'pages/WatchCalendarPage' }).catch((e: Error) => {
+        hilog.error(0x0001, 'Splash', 'watch jump failed: %{public}s', e.message);
+      });
+    });
   }
 
   aboutToDisappear(): void {
@@ -150,5 +179,8 @@ struct SplashPage {
     .width('100%')
     .height('100%')
     .backgroundColor(Colors.BG_PRIMARY)
+    .onAreaChange((_oldArea: Area, newArea: Area) => {
+      this.onMeasured(Number(newArea.width));
+    })
   }
 }
