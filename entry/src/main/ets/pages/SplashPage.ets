@@ -1,6 +1,7 @@
-import { router } from '@kit.ArkUI';
+import { router, display } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { Colors, STARRY_COLORS, STARRY_ANGLE } from '../utils/Constants';
 import { StorageUtils, StoreKey } from '../utils/StorageUtils';
 
@@ -50,9 +51,26 @@ struct SplashPage {
       this.logoScale = 1;
     });
 
-    // 2 秒后根据登录态跳转：已登录→首页，未登录→登录页
+    // 兜底：若该页在手表上被加载，直接进入手表日历运势页
+    const dt: string = deviceInfo.deviceType;
+    let smallScreen: boolean = false;
+    try {
+      const disp = display.getDefaultDisplaySync();
+      smallScreen = Math.min(disp.width, disp.height) <= 600;
+    } catch (e) {
+      hilog.warn(0x0001, 'Splash', 'getDefaultDisplaySync failed');
+    }
+    const isWearable: boolean = dt === 'wearable' || dt === 'watch' || smallScreen;
+
+    // 2 秒后跳转：手表→日历运势页；手机已登录→首页，未登录→登录页
     this.jumpTimer = setTimeout(async () => {
       await this.initialized;
+      if (isWearable) {
+        router.replaceUrl({ url: 'pages/WatchCalendarPage' }).catch((e: Error) => {
+          hilog.error(0x0001, 'Splash', 'watch jump failed: %{public}s', e.message);
+        });
+        return;
+      }
       const logged: boolean = await StorageUtils.getBool(StoreKey.LOGGED_IN, false);
       const dest: string = logged ? 'pages/HomePage' : 'pages/LoginPage';
       router.replaceUrl({ url: dest }).catch((e: Error) => {
