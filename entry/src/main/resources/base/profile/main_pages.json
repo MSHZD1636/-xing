@@ -22,6 +22,7 @@
     "pages/BirthdayQueryPage",
     "pages/StarChartPage",
     "pages/UserMatchPage",
-    "pages/ChatPage"
+    "pages/ChatPage",
+    "pages/WatchCalendarPage"
   ]
 }

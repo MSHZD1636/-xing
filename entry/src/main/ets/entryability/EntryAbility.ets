@@ -1,6 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 const DOMAIN: number = 0x0001;
 const TAG: string = 'StarWhisper';
@@ -36,7 +37,12 @@ export default class EntryAbility extends UIAbility {
       });
     });
 
-    windowStage.loadContent('pages/SplashPage', (err) => {
+    // 多模态入口：手表直接进入精简版日历运势页，手机走完整启动流程
+    const isWearable: boolean = deviceInfo.deviceType === 'wearable';
+    const entryPage: string = isWearable ? 'pages/WatchCalendarPage' : 'pages/SplashPage';
+    hilog.info(DOMAIN, TAG, 'deviceType=%{public}s, entryPage=%{public}s', deviceInfo.deviceType, entryPage);
+
+    windowStage.loadContent(entryPage, (err) => {
       if (err.code) {
         hilog.error(DOMAIN, TAG, 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
         return;
